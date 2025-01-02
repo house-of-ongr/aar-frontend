@@ -5,24 +5,40 @@ import Header from '@/components/Header'
 import InitHouseImg from '@/components/InitHouseImage'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { redirect, useRouter } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
+
+const BACK_API = process.env.NEXT_PUBLIC_BACK_API
 
 
 export default function LoginPage() {
+
     const [isAnimationComplete, setIsAnimationComplete] = useState<boolean>(false)
 
-    const kakaoLoginHandler = () => {
-        console.log("kakao login clicked")
+    const handleLogin = async (provider: string) => {
+        try {
+            const response = await fetch(`${BACK_API}/aar/authn/login/${provider}`, {
+                method: 'GET',
+            });
 
-    }
+            if (response.redirected) {
+                //Location: https://archiveofongr.site/login/auth?username=exampleUser&accessToken=exampleToken&provider=kakao&isFirstLogin=true
+                window.location.href = response.url;
+            } else {
+                throw new Error('리디렉션되지 않았습니다.');
+            }
+        } catch (error) {
+            console.error('로그인 요청 중 오류 발생:', error);
+            alert('로그인 중 문제가 발생했습니다. 다시 시도해주세요.');
+        }
+    };
 
 
     return (
 
         <div className='h-screen flex-center'>
             <Header />
+
             <div className='flex-center flex-col relative'>
                 <motion.div
                     initial={{ y: 0 }}
@@ -44,11 +60,10 @@ export default function LoginPage() {
                         className='w-full absolute z-10 flex-center flex-col '>
 
                         <div className='cursor-pointer pb-5'>
-                            <Image onClick={kakaoLoginHandler} src={"/images/kakaoLoginButton.png"} alt='kakaoLoginButton' width={200} height={100} />
+                            <Image onClick={() => handleLogin("kakao")} src={"/images/kakaoLoginButton.png"} alt='kakaoLoginButton' width={200} height={100} />
                         </div>
                     </motion.div>
                 )}
-
 
             </div>
             <Footer />
