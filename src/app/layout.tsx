@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import SWRConfigContext from "@/context/SWRConfigContext";
+
 
 export const metadata: Metadata = {
   title: "aar-frontend",
@@ -20,7 +22,9 @@ export default function RootLayout({
         suppressHydrationWarning
         className="flex flex-col w-full"
       >
-        {children}
+        <SWRConfigContext>
+          {children}
+        </SWRConfigContext>
       </body>
     </html>
   );
